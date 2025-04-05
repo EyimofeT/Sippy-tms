@@ -1,19 +1,9 @@
 import crypto from "crypto";
-
-// import { PrismaClient } from "@prisma/client";
-// import { getenv } from "../../core/read_env.js";
 import { clean_user_object } from "../user/util.js";
 import { compare_hash_string, generate_jwt } from "./util.js";
 import { create_user, read_user_by_email } from "../user/crud.js";
 import {custom_error} from  "../../core/customerror.js"
 
-// const prisma = new PrismaClient({
-//     datasources: {
-//       db: {
-//         url: getenv("DATABASE_URL"),
-//       },
-//     },
-//   });
 
 export const register = async (req, res) => {
     try {

@@ -133,10 +133,6 @@ export async function read_user_assigned_tasks(user_id) {
 export async function read_user_task(user_id, task_id) {
     try {
         let task = await prisma.task.findFirst({
-            // where:{
-            //     user_id,
-            //     task_id : Number(task_id)
-            // },
             where: {
                 OR: [
                     {
