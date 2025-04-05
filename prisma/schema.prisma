@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum Status {
+  to_do
+  in_progress
+  completed
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+// model user {
+//   user_id       String   @id @default(uuid())
+//   first_name    String
+//   last_name     String
+//   email         String   @unique
+//   password      String
+//   role          Role     @default(user)
+//   created_at    DateTime @default(now())
+//   updated_at    DateTime @updatedAt
+//   task_created  task[]   @relation("creator")
+//   task_assigned task[]   @relation("assigned_to")
+// }
+
+// model task {
+//   id                  Int       @id @default(autoincrement())
+//   title               String
+//   description         String?
+//   status              Status    @default(to_do)
+//   priority            Priority  @default(medium)
+//   due_date            DateTime?
+//   image_url           String?
+//   assigned_to_user_id String
+//   creator_user_id     String
+//   creator             user      @relation("creator", fields: [creator_user_id], references: [user_id], onDelete: Cascade)
+//   assigned_to         user      @relation("assigned_to", fields: [assigned_to_user_id], references: [user_id], onDelete: Cascade)
+//   created_at          DateTime  @default(now())
+//   updated_at          DateTime  @updatedAt
+// }
+
+model user {
+  user_id     String            @id @default(uuid())
+  first_name  String
+  last_name   String
+  email       String            @unique
+  password    String
+  role        Role              @default(user)
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+  tasks       task[]
+  assignments task_assignment[]
+  // leaderboard leaderboard[]
+}
+
+model task {
+  task_id     Int              @id @default(autoincrement())
+  title       String
+  description String?
+  status      Status           @default(to_do)
+  priority    Priority         @default(medium)
+  due_date    DateTime?
+  image_url   String?
+  user_id     String
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
+  user        user             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  assignments task_assignment?
+  
+  @@index([status])
+  @@index([priority])
+  @@index([due_date])
+}
+
+model task_assignment {
+  id          Int      @id @default(autoincrement())
+  task_id     Int      @unique
+  assigned_to String
+  task        task     @relation(fields: [task_id], references: [task_id], onDelete: Cascade)
+  user        user     @relation(fields: [assigned_to], references: [user_id], onDelete: Cascade)
+  assigned_at DateTime @updatedAt
+}
+
+// model leaderboard {
+//   user_id                String @id
+//   user                   user   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+//   completed_tasks_count  Int    @default(0)
+
+//   @@index([completed_tasks_count])
+// }
+
